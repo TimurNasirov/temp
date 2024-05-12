@@ -3,7 +3,6 @@ from sqlite3 import connect
 connect = connect('database.db', check_same_thread=False)
 cursor = connect.cursor()
 
-cursor.execute('CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY, key TEXT, name TEXT)')
 cursor.execute('CREATE TABLE IF NOT EXISTS messages(id INTEGER PRIMARY KEY, author TEXT, message TEXT)')
 
 class LastDoing:
@@ -14,33 +13,6 @@ lastdoing = LastDoing()
 
 def last_doing():
     return {'id': lastdoing.id, 'doing': lastdoing.doing, 'data': lastdoing.data}
-
-def users():
-    cursor.execute('SELECT * FROM users')
-    data = cursor.fetchall()
-    ndata = []
-    for i in data:
-        ndata.append({'id': i[0], 'key': i[1], 'name': i[2]})
-    return ndata
-
-def add_user(key, name):
-    cursor.execute(f'INSERT INTO users(key, name) VALUES("{key}", "{name}")')
-    connect.commit()
-    return {'id': cursor.lastrowid, 'key': key, 'name': name}
-
-def edit_user(id, key, name):
-    cursor.execute(f'UPDATE users SET key="{key}" WHERE id={id}')
-    
-    cursor.execute(f'SELECT name FROM users WHERE id={id}')
-    oldname = cursor.fetchone()
-    if oldname != name:
-        cursor.execute(f'UPDATE users SET name="{name}" WHERE id={id}')
-        cursor.execute(f'UPDATE messages SET author="{name}" WHERE author="{oldname}"')
-        lastdoing.id += 1
-        lastdoing.doing = 'user_edit'
-        lastdoing.data = name
-    connect.commit()
-
 
 def messages():
     cursor.execute('SELECT * FROM messages LIMIT 150')
