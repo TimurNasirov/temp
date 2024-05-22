@@ -22,3 +22,8 @@ def last_doing(api_key: str):
 def add_message(api_key: str, author: str, message: str):
     if api_key == DEFAULT_KEY:
         return db.send_message(author, message)
+
+@app.post('/temp/reply_message')
+def add_message(api_key: str, author: str, message: str, reply_id: int):
+    if api_key == DEFAULT_KEY:
+        return db.send_reply_message(author, message, reply_id)
