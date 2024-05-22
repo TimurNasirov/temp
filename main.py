@@ -1,7 +1,7 @@
-from fastapi import FastAPI
-import database as db
+from fastapi import APIRouter
+import temp.database as db
 
-app = FastAPI()
+app = APIRouter()
 DEFAULT_KEY = 'TEMP_DEFAULT-518362074.97z'
 
 @app.get('/temp/messages')
@@ -24,6 +24,11 @@ def add_message(api_key: str, author: str, message: str):
         return db.send_message(author, message)
 
 @app.post('/temp/reply_message')
-def add_message(api_key: str, author: str, message: str, reply_id: int):
+def add_reply_message(api_key: str, author: str, message: str, reply_id: int):
     if api_key == DEFAULT_KEY:
         return db.send_reply_message(author, message, reply_id)
+
+@app.get('/temp/message')
+def get_message(api_key: str, id: int):
+    if api_key == DEFAULT_KEY:
+        return db.get_message(id)
